@@ -1,0 +1,57 @@
+name: Refresh Weather Data
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # هر ۱ ساعت
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-weather
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (main)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # آخرین snapshot از شاخه‌ی data خوانده می‌شود تا اگر دریافت یک استان شکست خورد،
+      # آخرین فایل معتبر همان استان حفظ شود.
+      - name: Restore previous snapshot (fallback)
+        run: |
+          mkdir -p data-out
+          if git ls-remote --exit-code --heads origin data >/dev/null 2>&1; then
+            git fetch --depth=1 origin data
+            git archive FETCH_HEAD | tar -x -C data-out
+          fi
+
+      - name: Fetch weather from Windy
+        env:
+          WINDY_API_KEY: ${{ secrets.WINDY_API_KEY }}
+          OUT_DIR: data-out
+          WINDY_AQ: '1'
+        run: node scripts/fetch-weather.mjs
+
+      # شاخه‌ی data هر بار با «یک کامیت تازه» جایگزین می‌شود؛ پس هیچ داده‌ی قدیمی
+      # در تاریخچه‌ی ریپازیتوری باقی نمی‌ماند.
+      - name: Publish snapshot to data branch (single commit, force push)
+        run: |
+          cd data-out
+          rm -rf .git
+          git init -q -b data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "chore(data): weather snapshot $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" data

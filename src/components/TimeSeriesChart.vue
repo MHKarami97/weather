@@ -1,7 +1,7 @@
 <script setup>
 /**
  * نمودار سری زمانی سبک (SVG خالص، بدون کتابخانه): خطی / ناحیه‌ای / ستونی، با tooltip و خط «اکنون».
- * rows: آرایه‌ای از اشیا با کلید t (میلی‌ثانیه) — series: [{ key, label, color, type, unit, decimals, dashed }]
+ * rows: آرایه‌ای از اشیا با کلید t (میلی‌ثانیه) - series: [{ key, label, color, type, unit, decimals, dashed }]
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { fa, fmtTime, fmtTooltip, fmtWeekdayShort } from '../utils/format.js'

@@ -78,7 +78,7 @@ export function buildReports({ rows, daily, air, lat, lon }, now = Date.now()) {
 
   const goodHours = next24.filter((r) => r.t > now - 1800000 && (r.feels ?? r.temp) >= 14 && (r.feels ?? r.temp) <= 29 && (r.precip ?? 0) / stepH < 0.1 && (r.wind ?? 0) < 25)
   if (goodHours.length) {
-    add('good', '🚶', 'بهترین زمان برای فعالیت بیرون', `${hourLabel(goodHours[0].t)} تا ${hourLabel(goodHours[goodHours.length - 1].t)} — دمای مطبوع، بدون بارش و باد ملایم.`)
+    add('good', '🚶', 'بهترین زمان برای فعالیت بیرون', `${hourLabel(goodHours[0].t)} تا ${hourLabel(goodHours[goodHours.length - 1].t)} - دمای مطبوع، بدون بارش و باد ملایم.`)
   } else {
     add('info', '🏠', 'شرایط بیرون', 'در ۲۴ ساعت آینده بازه‌ی کاملاً مطبوعی برای فعالیت در فضای باز دیده نمی‌شود.')
   }
@@ -96,7 +96,7 @@ export function buildReports({ rows, daily, air, lat, lon }, now = Date.now()) {
   }
 
   const sun = sunTimes(lat, lon, now)
-  if (sun.sunrise && sun.sunset) add('info', '🌅', 'طلوع و غروب امروز', `طلوع ${hourLabel(sun.sunrise)} — غروب ${hourLabel(sun.sunset)} (به وقت ایران)`)
+  if (sun.sunrise && sun.sunset) add('info', '🌅', 'طلوع و غروب امروز', `طلوع ${hourLabel(sun.sunrise)} - غروب ${hourLabel(sun.sunset)} (به وقت ایران)`)
 
   const hdd = next24.reduce((a, r) => a + Math.max(0, 18 - r.temp) * stepH, 0) / 24
   const cdd = next24.reduce((a, r) => a + Math.max(0, r.temp - 24) * stepH, 0) / 24
@@ -122,7 +122,7 @@ export function buildReports({ rows, daily, air, lat, lon }, now = Date.now()) {
       if (rainy.length) add('info', '🗓️', 'روزهای بارانی هفته', rainy.map((d) => `${dayLabel(d.t)} (${fa(d.precip, 1)} میلی‌متر)`).join('، '))
       const hottest = upcoming.reduce((b, d) => (d.max > b.max ? d : b), upcoming[0])
       const coldest = upcoming.reduce((b, d) => (d.min < b.min ? d : b), upcoming[0])
-      add('info', '🌡️', 'گرم‌ترین و سردترین روز', `گرم‌ترین: ${dayLabel(hottest.t)} با ${fa(hottest.max)}° — سردترین: ${dayLabel(coldest.t)} با ${fa(coldest.min)}°`)
+      add('info', '🌡️', 'گرم‌ترین و سردترین روز', `گرم‌ترین: ${dayLabel(hottest.t)} با ${fa(hottest.max)}° - سردترین: ${dayLabel(coldest.t)} با ${fa(coldest.min)}°`)
     }
   }
 

@@ -1,6 +1,6 @@
 # هواشناسی (weather)
 
-وضعیت لحظه‌ای و پیش‌بینی آب‌وهوای ۳۱ استان ایران — PWA با Vue 3 روی GitHub Pages، با داده‌ی [Windy Point Forecast API](https://api.windy.com/point-forecast/docs). ظاهر و ساختار از پروژه‌ی «نرخ» گرفته شده است.
+وضعیت لحظه‌ای و پیش‌بینی آب‌وهوای ۳۱ استان ایران - PWA با Vue 3 روی GitHub Pages، با داده‌ی [Windy Point Forecast API](https://api.windy.com/point-forecast/docs). ظاهر و ساختار از پروژه‌ی «نرخ» گرفته شده است.
 
 ## امکانات
 **صفحه‌ی اول**

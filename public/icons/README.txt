@@ -1,2 +1,0 @@
-آیکون‌ها را با همین نام‌ها اینجا قرار دهید (PNG):
-icon-48.png, icon-72.png, icon-96.png, icon-144.png, icon-192.png, icon-512.png

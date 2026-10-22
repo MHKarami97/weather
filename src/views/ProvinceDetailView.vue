@@ -213,7 +213,7 @@ async function share() {
           </dl>
           <p class="detail__updated">
             آخرین دریافت داده‌ی این استان: {{ fmtDateTime(data.fetchedAtMs) }} ({{ relativeFa(data.fetchedAtMs, now) }})
-            <span v-if="isStale" class="asset-card__stale"> — دریافت اخیر ناموفق بود؛ آخرین داده‌ی معتبر نمایش داده می‌شود</span>
+            <span v-if="isStale" class="asset-card__stale"> - دریافت اخیر ناموفق بود؛ آخرین داده‌ی معتبر نمایش داده می‌شود</span>
           </p>
         </template>
         <p v-else-if="status === 'error'" class="detail__empty detail__empty--page">
@@ -253,7 +253,7 @@ async function share() {
           <section class="card detail__chart"><h3>رطوبت نسبی (٪)</h3><TimeSeriesChart :rows="chartRows" :series="S.humidity" :now-ms="now" :fixed-min="0" :fixed-max="100" /></section>
           <section class="card detail__chart"><h3>پوشش ابر (٪)</h3><TimeSeriesChart :rows="chartRows" :series="S.cloud" :now-ms="now" :fixed-min="0" :fixed-max="100" /></section>
           <section class="card detail__chart"><h3>فشار هوا (hPa)</h3><TimeSeriesChart :rows="chartRows" :series="S.pressure" :now-ms="now" /></section>
-          <section class="card detail__chart"><h3>ناپایداری جوی — CAPE (J/kg)</h3><TimeSeriesChart :rows="chartRows" :series="S.cape" :now-ms="now" :zero-based="true" /></section>
+          <section class="card detail__chart"><h3>ناپایداری جوی - CAPE (J/kg)</h3><TimeSeriesChart :rows="chartRows" :series="S.cape" :now-ms="now" :zero-based="true" /></section>
         </div>
 
         <template v-if="hasAir">
@@ -274,7 +274,7 @@ async function share() {
         </div>
 
         <p class="detail__note">
-          منبع: Windy.com — مدل GFS (پیش‌بینی) و CAMS (کیفیت هوا) برای مختصات مرکز استان
+          منبع: Windy.com - مدل GFS (پیش‌بینی) و CAMS (کیفیت هوا) برای مختصات مرکز استان
           ({{ fa(meta.lat, 2) }}، {{ fa(meta.lon, 2) }}). بارش هر نقطه، مجموع {{ fa(stepH) }} ساعت منتهی به همان زمان است.
           زمان‌ها به وقت ایران هستند.
         </p>

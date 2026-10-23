@@ -63,7 +63,6 @@ function goHome() {
     <div class="app-header__status">
       <span>{{ statusLabel }}</span>
       <span>· آخرین دریافت داده: <bdi>{{ fetchedLabel }}</bdi><template v-if="agoLabel"> ({{ agoLabel }})</template></span>
-      <span>· بروزرسانی داده هر ۱ ساعت</span>
     </div>
   </header>
 </template>

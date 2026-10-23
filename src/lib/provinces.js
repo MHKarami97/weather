@@ -33,6 +33,6 @@ export const PROVINCES = [
   { id: 'yazd', name: 'یزد', capital: 'یزد', lat: 31.89661, lon: 54.36068 },
 ]
 
-export const DEFAULT_FAVORITES = ['tehran', 'alborz', 'razavi-khorasan', 'isfahan']
+export const DEFAULT_FAVORITES = ['tehran', 'alborz', 'east-azerbaijan', 'isfahan']
 
 export const PROVINCE_BY_ID = Object.fromEntries(PROVINCES.map((p) => [p.id, p]))

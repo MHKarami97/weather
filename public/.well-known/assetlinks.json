@@ -5,7 +5,7 @@
       "namespace": "android_app",
       "package_name": "mhk.weather",
       "sha256_cert_fingerprints": [
-        ""
+        "55:19:A8:BD:38:22:76:10:18:39:13:CB:21:DA:CE:D4:77:30:51:7C:4F:5A:D4:77:18:CD:9E:8E:12:1C:C1:58"
       ]
     }
   },
@@ -15,7 +15,7 @@
       "namespace": "cafebazaar_twa",
       "package_name": "mhk.weather",
       "sha256_cert_fingerprints": [
-        ""
+        "55:19:A8:BD:38:22:76:10:18:39:13:CB:21:DA:CE:D4:77:30:51:7C:4F:5A:D4:77:18:CD:9E:8E:12:1C:C1:58"
       ]
     }
   }

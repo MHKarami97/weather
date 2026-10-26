@@ -1,12 +1,15 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from 'vue'
 import { useWeatherStore } from './stores/weather.js'
+import { useReminderStore } from './stores/reminder.js'
 import { REFRESH_INTERVAL_MS } from './config.js'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 import UpdateToast from './components/UpdateToast.vue'
+import TelegramSyncModal from './components/TelegramSyncModal.vue'
 
 const store = useWeatherStore()
+const reminderStore = useReminderStore()
 let timerId = null
 
 function onVisible() {
@@ -16,6 +19,7 @@ function onVisible() {
 onMounted(() => {
   store.loadFromCache()
   store.refresh()
+  reminderStore.init()
   timerId = setInterval(() => store.refresh(), REFRESH_INTERVAL_MS)
   document.addEventListener('visibilitychange', onVisible)
 })
@@ -35,4 +39,5 @@ onBeforeUnmount(() => {
   </router-view>
   <AppFooter />
   <UpdateToast />
+  <TelegramSyncModal />
 </template>

@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useWeatherStore } from '../stores/weather.js'
+import { useReminderStore } from '../stores/reminder.js'
 import { PROVINCE_BY_ID } from '../lib/provinces.js'
 import { CONDITION_COLORS, describeCondition, pickCurrent, stepHours, sunTimes, windDirLabel } from '../lib/weather.js'
 import { buildReports } from '../lib/reports.js'
@@ -16,12 +17,14 @@ import AirPanel from '../components/AirPanel.vue'
 const route = useRoute()
 const router = useRouter()
 const store = useWeatherStore()
+const reminderStore = useReminderStore()
 
 const id = computed(() => route.params.id)
 const meta = computed(() => PROVINCE_BY_ID[id.value] || null)
 const data = computed(() => store.details[id.value] || null)
 const status = computed(() => store.detailStatus[id.value])
 const isFavorite = computed(() => store.favorites.includes(id.value))
+const isSubscribed = computed(() => reminderStore.isSubscribed(id.value))
 const isStale = computed(() => store.provinces.find((p) => p.id === id.value)?.stale)
 
 const now = ref(Date.now())
@@ -187,6 +190,19 @@ async function share() {
             </button>
             <button
               type="button"
+              class="icon-btn detail__bell"
+              :class="{ 'is-active': isSubscribed }"
+              :aria-pressed="isSubscribed"
+              :title="isSubscribed ? 'لغو هشدار باران و برف' : 'اعلام یادآوری باران و برف در تلگرام'"
+              @click="reminderStore.toggleSubscription(id)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" :fill="isSubscribed ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </button>
+            <button
+              type="button"
               class="icon-btn detail__fav"
               :class="{ 'is-active': isFavorite }"
               :aria-pressed="isFavorite"
@@ -298,6 +314,7 @@ async function share() {
 .detail__chip { display: inline-block; margin-top: 4px; padding: 2px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .detail__actions { display: flex; gap: 8px; }
 .detail__fav.is-active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.detail__bell.is-active { color: #38bdf8; border-color: color-mix(in srgb, #38bdf8 45%, transparent); }
 .detail__price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
 .detail__price { font-size: clamp(2.2rem, 8vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
 .detail__unit { font-size: 1.05rem; font-weight: 600; }

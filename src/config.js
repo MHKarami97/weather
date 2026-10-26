@@ -19,3 +19,6 @@ export const DATA_SOURCES = [
 
 // داده هر ۱ ساعت ساخته می‌شود؛ مرورگر هر ۵ دقیقه وجود نسخه‌ی جدید را بررسی می‌کند.
 export const REFRESH_INTERVAL_MS = 5 * 60 * 1000
+
+export const REMINDER_API_BASE =
+  import.meta.env.VITE_REMINDER_API_BASE || 'https://task-reminders.mhkarami97.workers.dev'

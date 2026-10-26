@@ -292,6 +292,7 @@ button, input {
 
 .asset-card__fav:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .asset-card__fav.is-active { color: var(--accent); }
+.asset-card__bell.is-active { color: #38bdf8; }
 
 .asset-card__price-row {
   display: flex;

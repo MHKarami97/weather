@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWeatherStore } from '../stores/weather.js'
+import { useReminderStore } from '../stores/reminder.js'
 import { CONDITION_COLORS, windDirLabel } from '../lib/weather.js'
 import { fa, faTemp } from '../utils/format.js'
 
@@ -10,7 +11,10 @@ const props = defineProps({
   isFavorite: { type: Boolean, default: false },
 })
 const store = useWeatherStore()
+const reminderStore = useReminderStore()
 const router = useRouter()
+
+const isSubscribed = computed(() => reminderStore.isSubscribed(props.province.id))
 
 const s = computed(() => props.province.summary)
 const accent = computed(() => {
@@ -40,6 +44,19 @@ function openDetail() {
         <strong class="asset-card__label">{{ province.name }}</strong>
         <span class="asset-card__sub">مرکز: {{ province.capital }}</span>
       </div>
+      <button
+        type="button"
+        class="asset-card__fav asset-card__bell"
+        :class="{ 'is-active': isSubscribed }"
+        :aria-pressed="isSubscribed"
+        :title="isSubscribed ? 'لغو هشدار باران و برف' : 'اعلام یادآوری باران و برف در تلگرام'"
+        @click.stop="reminderStore.toggleSubscription(province.id)"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" :fill="isSubscribed ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      </button>
       <button
         type="button"
         class="asset-card__fav"

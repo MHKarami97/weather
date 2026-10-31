@@ -3,6 +3,7 @@ import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useWeatherStore } from '../stores/weather.js'
 import { fmtDateTime, relativeFa } from '../utils/format.js'
+import SourceSelector from './SourceSelector.vue'
 import ThemeToggle from './ThemeToggle.vue'
 
 const BASE = import.meta.env.BASE_URL
@@ -64,5 +65,7 @@ function goHome() {
       <span>{{ statusLabel }}</span>
       <span>· آخرین دریافت داده: <bdi>{{ fetchedLabel }}</bdi><template v-if="agoLabel"> ({{ agoLabel }})</template></span>
     </div>
+
+    <SourceSelector :now="now" />
   </header>
 </template>

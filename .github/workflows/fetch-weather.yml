@@ -37,15 +37,36 @@ jobs:
           fi
 
       - name: Fetch weather from Windy
+        continue-on-error: true
         env:
           WINDY_API_KEY: ${{ secrets.WINDY_API_KEY }}
           OUT_DIR: data-out
           WINDY_AQ: '1'
         run: node scripts/fetch-weather.mjs
 
+      # منابع دیگر: هر منبع بر اساس بازه‌ی خودش (intervalMinutes) اجرا می‌شود و منبعی که کلیدش
+      # تنظیم نشده باشد بی‌صدا رد می‌شود. خطای یک منبع روی بقیه اثری ندارد.
+      - name: Fetch weather from other sources
+        continue-on-error: true
+        env:
+          OUT_DIR: data-out
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          WEATHERAPI_KEY: ${{ secrets.WEATHERAPI_KEY }}
+          PIRATE_WEATHER_API_KEY: ${{ secrets.PIRATE_WEATHER_API_KEY }}
+          TOMORROW_API_KEY: ${{ secrets.TOMORROW_API_KEY }}
+          MET_USER_AGENT: weather-pwa/1.0 ${{ github.repository }} https://mhkarami97.ir
+        run: node scripts/fetch-sources.mjs
+
+      - name: Build sources manifest
+        if: ${{ !cancelled() }}
+        env:
+          OUT_DIR: data-out
+        run: node scripts/build-manifest.mjs
+
       # شاخه‌ی data هر بار با «یک کامیت تازه» جایگزین می‌شود؛ پس هیچ داده‌ی قدیمی
       # در تاریخچه‌ی ریپازیتوری باقی نمی‌ماند.
       - name: Publish snapshot to data branch (single commit, force push)
+        if: ${{ !cancelled() }}
         run: |
           cd data-out
           rm -rf .git

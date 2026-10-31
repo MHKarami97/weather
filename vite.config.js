@@ -37,12 +37,12 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            urlPattern: /\/data\/(latest|provinces\/[^/]+)\.json/,
+            urlPattern: /\/data\/(?:sources\/[^/]+\/)?(?:latest|provinces\/[^/]+)\.json|\/data\/sources\.json/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'weather-data-cache',
               networkTimeoutSeconds: 4,
-              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 },
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 },
             },
           },
         ],

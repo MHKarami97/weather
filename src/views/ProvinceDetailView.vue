@@ -253,8 +253,11 @@ async function share() {
             <small v-if="h.precip > 0"><bdi>{{ fa(h.precip, 1) }}</bdi> mm</small>
           </div>
         </div>
-
-        <DailyForecast :days="daily" :now-ms="now" />
+        
+        <h2 class="section-title">پیش‌بینی روزانه</h2>        
+        <div class="detail__charts" style="margin-top: 12px;">
+          <DailyForecast :days="daily" :now-ms="now" />
+        </div>
 
         <template v-if="hasAir">
           <h2 class="section-title">کیفیت هوا</h2>
@@ -263,6 +266,8 @@ async function share() {
             <section class="card detail__chart"><h3>شاخص کیفیت هوا (AQI)</h3><TimeSeriesChart :rows="airRows" :series="S.aqi" :now-ms="now" :zero-based="true" /></section>
             <section class="card detail__chart"><h3>ذرات معلق و گردوخاک (µg/m³)</h3><TimeSeriesChart :rows="airRows" :series="S.pm" :now-ms="now" :zero-based="true" /></section>
             <section v-if="hasGases" class="card detail__chart"><h3>گازهای آلاینده (µg/m³)</h3><TimeSeriesChart :rows="airRows" :series="S.gases" :now-ms="now" :zero-based="true" /></section>
+            <section class="card detail__chart"><h3>روند کمینه و بیشینه‌ی دما (°C)</h3><TimeSeriesChart :rows="dailyRows" :series="S.dailyTemp" :now-ms="now" /></section>
+          <section class="card detail__chart"><h3>مجموع بارش روزانه (mm)</h3><TimeSeriesChart :rows="dailyRows" :series="S.dailyPrecip" :now-ms="now" /></section>
           </div>
         </template>
 
@@ -282,12 +287,6 @@ async function share() {
           <section class="card detail__chart"><h3>پوشش ابر (٪)</h3><TimeSeriesChart :rows="chartRows" :series="S.cloud" :now-ms="now" :fixed-min="0" :fixed-max="100" /></section>
           <section class="card detail__chart"><h3>فشار هوا (hPa)</h3><TimeSeriesChart :rows="chartRows" :series="S.pressure" :now-ms="now" /></section>
           <section class="card detail__chart"><h3>ناپایداری جوی - CAPE (J/kg)</h3><TimeSeriesChart :rows="chartRows" :series="S.cape" :now-ms="now" :zero-based="true" /></section>
-        </div>
-
-        <h2 class="section-title">پیش‌بینی روزانه</h2>        
-        <div class="detail__charts" style="margin-top: 12px;">
-          <section class="card detail__chart"><h3>روند کمینه و بیشینه‌ی دما (°C)</h3><TimeSeriesChart :rows="dailyRows" :series="S.dailyTemp" :now-ms="now" /></section>
-          <section class="card detail__chart"><h3>مجموع بارش روزانه (mm)</h3><TimeSeriesChart :rows="dailyRows" :series="S.dailyPrecip" :now-ms="now" /></section>
         </div>
 
         <p class="detail__note">

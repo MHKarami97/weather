@@ -259,6 +259,9 @@ async function share() {
           <DailyForecast :days="daily" :now-ms="now" />
         </div>
 
+        <h2 class="section-title">گزارش‌های کاربردی</h2>
+        <ReportList :reports="reports" />
+
         <template v-if="hasAir">
           <h2 class="section-title">کیفیت هوا</h2>
           <AirPanel :air="air" :now-ms="now" />
@@ -270,9 +273,6 @@ async function share() {
           <section class="card detail__chart"><h3>مجموع بارش روزانه (mm)</h3><TimeSeriesChart :rows="dailyRows" :series="S.dailyPrecip" :now-ms="now" /></section>
           </div>
         </template>
-
-        <h2 class="section-title">گزارش‌های کاربردی</h2>
-        <ReportList :reports="reports" />
 
         <div class="detail__section-head">
           <h2 class="section-title">نمودارهای تحلیلی</h2>

@@ -63,6 +63,13 @@ jobs:
           OUT_DIR: data-out
         run: node scripts/build-manifest.mjs
 
+      # یک فایل خلاصه از روزهای بارانی/برفی همه‌ی استان‌ها و منابع برای ورکر اعلان
+      - name: Build notification alerts
+        if: ${{ !cancelled() }}
+        env:
+          OUT_DIR: data-out
+        run: node scripts/build-alerts.mjs
+
       # شاخه‌ی data هر بار با «یک کامیت تازه» جایگزین می‌شود؛ پس هیچ داده‌ی قدیمی
       # در تاریخچه‌ی ریپازیتوری باقی نمی‌ماند.
       - name: Publish snapshot to data branch (single commit, force push)

@@ -18,11 +18,11 @@ const RAIN_SNOW_CODES = new Set(['storm', 'heavy-rain', 'rain', 'drizzle', 'snow
 const SOURCE_NAMES = {
   windy: 'Windy',
   'met-no': 'MET Norway',
-  'open-meteo': 'Open-Meteo',
-  openweather: 'OpenWeather',
+  'open-meteo': 'Open Meteo',
+  openweather: 'Open Weather',
   'pirate-weather': 'Pirate Weather',
-  'tomorrow-io': 'Tomorrow.io',
-  weatherapi: 'WeatherAPI',
+  'tomorrow-io': 'Tomorrow Io',
+  weatherapi: 'Weather Api',
 }
 
 const readJson = async (file) => {

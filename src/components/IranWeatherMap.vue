@@ -128,7 +128,7 @@ class ProvinceMarkerLayer {
 
     const temp = document.createElement('b')
     temp.className = 'wx-pin__temp'
-    temp.textContent = Number.isFinite(summary.temp) ? `${Math.round(summary.temp)}°` : '–'
+    temp.textContent = Number.isFinite(summary.temp) ? `${Math.round(summary.temp).toLocaleString('fa-IR')}°` : '–'
 
     const name = document.createElement('span')
     name.className = 'wx-pin__name'
@@ -213,15 +213,15 @@ onBeforeUnmount(() => {
 
 <style>
 .wx-pin-wrap { background: none; border: 0; }
-.wx-pin { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; line-height: 1.1; cursor: pointer; direction: rtl; font-family: inherit; }
+.wx-pin { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; line-height: 1.2; cursor: pointer; direction: rtl; font-family: 'Vazirmatn', system-ui, sans-serif; }
 .wx-pin__icon { font-size: 22px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)); }
-.wx-pin__temp { padding: 1px 6px; border-radius: 999px; background: #0f172a; color: #fff; font-size: 12px; }
-.wx-pin__name { margin-top: 2px; padding: 0 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.85); color: #111; font-size: 10px; white-space: nowrap; }
+.wx-pin__temp { padding: 1px 6px; border-radius: 999px; background: #0f172a; color: #fff; font-family: 'Vazirmatn', system-ui, sans-serif; font-size: 12px; font-weight: 700; }
+.wx-pin__name { margin-top: 2px; padding: 0 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.88); color: #111; font-family: 'Vazirmatn', system-ui, sans-serif; font-size: 11px; font-weight: 600; white-space: nowrap; }
 
 [data-theme='dark'] .wx-tiles { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.7); }
 [data-theme='dark'] .iran-map__canvas.leaflet-container { background: #0b1220; }
 [data-theme='dark'] .wx-pin__temp { background: #e2e8f0; color: #0f172a; }
-[data-theme='dark'] .wx-pin__name { background: rgba(15, 23, 42, 0.85); color: #e2e8f0; }
+[data-theme='dark'] .wx-pin__name { background: rgba(15, 23, 42, 0.88); color: #e2e8f0; }
 [data-theme='dark'] .leaflet-control-attribution { background: rgba(15, 23, 42, 0.7); color: #94a3b8; }
 [data-theme='dark'] .leaflet-control-attribution a { color: #93c5fd; }
 </style>

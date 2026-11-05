@@ -3,10 +3,11 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlertsStore } from '../stores/alerts.js'
 import { useWeatherStore } from '../stores/weather.js'
+import AlertSourceList from './AlertSourceList.vue'
 
 const FALLBACK_COUNT = 4
 const dayFormatter = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long', day: 'numeric' })
-const numberFormatter = new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 1 })
+const numberFormatter = new Intl.NumberFormat('fa-IR')
 
 const alertsStore = useAlertsStore()
 const weatherStore = useWeatherStore()
@@ -25,7 +26,6 @@ const hiddenCount = computed(() => items.value.length - collapsedItems.value.len
 const noFavoriteAlerts = computed(() => hasFavorites.value && collapsedItems.value.length === 0)
 
 const formatDay = (dateKey) => dayFormatter.format(new Date(`${dateKey}T12:00:00`))
-const formatMm = (value) => `${numberFormatter.format(value)} mm`
 const formatCount = (value) => numberFormatter.format(value)
 const kindIcon = (kind) => (kind === 'snow' ? '❄️' : '🌧️')
 const kindLabel = (kind) => (kind === 'snow' ? 'برف' : 'باران')
@@ -69,17 +69,12 @@ onMounted(() => alertsStore.load())
             </button>
           </header>
 
-          <div v-if="item.today" class="alerts__day">
+          <div v-if="item.today">
             <div class="alerts__day-title">
               <span aria-hidden="true">{{ kindIcon(item.today.kind) }}</span>
               <span>امروز: {{ kindLabel(item.today.kind) }}</span>
             </div>
-            <ul class="alerts__sources">
-              <li v-for="source in item.today.sources" :key="source.id" class="alerts__chip">
-                <span>{{ source.name }}</span>
-                <bdi>{{ source.label }} · {{ formatMm(source.precip) }}</bdi>
-              </li>
-            </ul>
+            <AlertSourceList :sources="item.today.sources" />
           </div>
           <p v-else class="alerts__quiet">امروز هشداری نیست.</p>
 
@@ -93,17 +88,12 @@ onMounted(() => alertsStore.load())
               {{ expandedDays.has(item.provinceId) ? 'پنهان کردن روزهای دیگر' : `نمایش روزهای دیگر (${formatCount(item.otherDays.length)})` }}
             </button>
             <div v-if="expandedDays.has(item.provinceId)" class="alerts__others">
-              <section v-for="day in item.otherDays" :key="day.date" class="alerts__day">
+              <section v-for="day in item.otherDays" :key="day.date">
                 <div class="alerts__day-title">
                   <span aria-hidden="true">{{ kindIcon(day.kind) }}</span>
                   <span>{{ formatDay(day.date) }}: {{ kindLabel(day.kind) }}</span>
                 </div>
-                <ul class="alerts__sources">
-                  <li v-for="source in day.sources" :key="source.id" class="alerts__chip">
-                    <span>{{ source.name }}</span>
-                    <bdi>{{ source.label }} · {{ formatMm(source.precip) }}</bdi>
-                  </li>
-                </ul>
+                <AlertSourceList :sources="day.sources" />
               </section>
             </div>
           </template>
@@ -133,13 +123,10 @@ onMounted(() => alertsStore.load())
 .alerts__name:hover { text-decoration: underline; }
 .alerts__fav { color: #f59e0b; }
 .alerts__day-title { display: flex; gap: 6px; font-size: 0.9rem; font-weight: 600; }
-.alerts__sources { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.alerts__chip { display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 0.78rem; padding: 3px 8px; border-radius: 12px; background: rgba(127, 127, 127, 0.15); }
-.alerts__chip > span:first-child { color: var(--text-muted, #737373); }
 .alerts__quiet { margin: 0; font-size: 0.85rem; color: var(--text-muted, #737373); }
 .alerts__days-btn { align-self: flex-start; padding: 4px 10px; font: inherit; font-size: 0.8rem; color: inherit; background: transparent; border: 1px solid rgba(127, 127, 127, 0.4); border-radius: 999px; cursor: pointer; }
 .alerts__days-btn:hover { background: rgba(127, 127, 127, 0.12); }
-.alerts__others { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; border-top: 1px dashed rgba(127, 127, 127, 0.35); }
+.alerts__others { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed rgba(127, 127, 127, 0.35); }
 .alerts__more { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 14px auto 0; padding: 8px 18px; font: inherit; color: inherit; background: rgba(127, 127, 127, 0.12); border: 1px solid rgba(127, 127, 127, 0.35); border-radius: 999px; cursor: pointer; transition: background 0.15s ease; }
 .alerts__more:hover { background: rgba(127, 127, 127, 0.22); }
 .alerts__more-icon { transition: transform 0.2s ease; }

@@ -13,6 +13,7 @@ import StatTiles from '../components/StatTiles.vue'
 import DailyForecast from '../components/DailyForecast.vue'
 import ReportList from '../components/ReportList.vue'
 import AirPanel from '../components/AirPanel.vue'
+import ProvinceAlerts from '../components/ProvinceAlerts.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -261,6 +262,7 @@ async function share() {
 
         <h2 class="section-title">گزارش‌های کاربردی</h2>
         <ReportList :reports="reports" />
+        <ProvinceAlerts v-if="meta" :province-id="id" />
 
         <template v-if="hasAir">
           <h2 class="section-title">کیفیت هوا</h2>

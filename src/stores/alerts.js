@@ -27,9 +27,6 @@ export const useAlertsStore = defineStore('alerts', {
     status: 'idle',
     lastLoadedAt: 0,
   }),
-  getters: {
-    generatedAtMs: (state) => (state.payload?.generatedAt ? Date.parse(state.payload.generatedAt) : null),
-  },
   actions: {
     report(favoriteIds) {
       return new AlertsReport(this.payload).build(favoriteIds)

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useWeatherStore } from '../stores/weather.js'
 import FavoritesBar from '../components/FavoritesBar.vue'
 import ProvinceGrid from '../components/ProvinceGrid.vue'
+import CollapsibleSection from '../components/CollapsibleSection.vue'
 import AlertsPanel from '../components/AlertsPanel.vue'
 import IranWeatherMap from '../components/IranWeatherMap.vue'
 
@@ -15,10 +16,16 @@ const showOverview = computed(() => !isSearching.value && store.provinces.length
 <template>
   <main class="container" style="flex: 1; padding-bottom: 48px">
     <FavoritesBar v-if="showFavorites" />
-    <AlertsPanel v-if="showOverview" />
-    <IranWeatherMap v-if="showOverview" />
 
-    <h2 class="section-title">
+    <CollapsibleSection v-if="showOverview" storage-key="alerts" title="هشدار باران و برف">
+      <AlertsPanel />
+    </CollapsibleSection>
+
+    <CollapsibleSection v-if="showOverview" storage-key="map" title="نقشه آب‌وهوای ایران">
+      <IranWeatherMap />
+    </CollapsibleSection>
+
+    <h2 class="section-title" style="margin-top: 24px">
       {{ isSearching ? 'نتایج جستجو' : 'همه استان‌ها' }}
       <small v-if="isSearching" style="color: var(--text-muted); font-weight: 500">
         ({{ store.filteredProvinces.length.toLocaleString('fa-IR') }})

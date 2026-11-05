@@ -18,27 +18,28 @@ export class AlertsReport {
     return `${date.getFullYear()}-${month}-${day}`
   }
 
-  get generatedAt() {
-    return this.#payload.generatedAt ?? null
-  }
-
   build(favoriteIds = []) {
-    const favorites = new Set(favoriteIds)
+    const favoriteOrder = new Map(favoriteIds.map((id, index) => [id, index]))
     const items = []
     for (const [provinceId, byDate] of Object.entries(this.#payload.provinces ?? {})) {
       const days = this.#buildDays(byDate)
       if (days.length === 0) continue
+      const today = days.find((day) => day.date === this.#todayKey) ?? null
       items.push({
         provinceId,
         name: NAME_BY_ID.get(provinceId) ?? provinceId,
-        isFavorite: favorites.has(provinceId),
+        isFavorite: favoriteOrder.has(provinceId),
+        favoriteIndex: favoriteOrder.get(provinceId) ?? Number.MAX_SAFE_INTEGER,
         firstDate: days[0].date,
-        days,
+        today,
+        otherDays: days.filter((day) => day !== today),
       })
     }
     return items.sort(
       (a, b) =>
         Number(b.isFavorite) - Number(a.isFavorite) ||
+        a.favoriteIndex - b.favoriteIndex ||
+        Number(Boolean(b.today)) - Number(Boolean(a.today)) ||
         a.firstDate.localeCompare(b.firstDate) ||
         a.name.localeCompare(b.name, 'fa'),
     )

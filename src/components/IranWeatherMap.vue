@@ -5,7 +5,7 @@ import { useWeatherStore } from '../stores/weather.js'
 
 const IRAN_BOUNDS = [[25.0, 44.0], [39.8, 63.4]]
 const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-const TILE_ATTRIBUTION = '&copy; mhkarami97</a>'
+const TILE_ATTRIBUTION = ''
 const BORDER_URLS = [
   `${import.meta.env.BASE_URL}geo/iran.geo.json`,
   'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries/IRN.geo.json',

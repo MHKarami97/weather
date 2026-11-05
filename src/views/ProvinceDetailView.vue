@@ -289,11 +289,6 @@ async function share() {
           <section class="card detail__chart"><h3>ناپایداری جوی - CAPE (J/kg)</h3><TimeSeriesChart :rows="chartRows" :series="S.cape" :now-ms="now" :zero-based="true" /></section>
         </div>
 
-        <p class="detail__note">
-          منبع: Windy.com - مدل GFS (پیش‌بینی) و CAMS (کیفیت هوا) برای مختصات مرکز استان
-          ({{ fa(meta.lat, 2) }}، {{ fa(meta.lon, 2) }}). بارش هر نقطه، مجموع {{ fa(stepH) }} ساعت منتهی به همان زمان است.
-          زمان‌ها به وقت ایران هستند.
-        </p>
       </template>
     </template>
   </div>

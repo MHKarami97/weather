@@ -1,6 +1,6 @@
 {
   "name": "weather",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "وضعیت آب‌وهوای ۳۱ استان ایران با چند منبع داده",
@@ -15,6 +15,7 @@
     "test:sources": "node scripts/selftest-sources.mjs"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "pinia": "^2.1.7"

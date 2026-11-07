@@ -2,6 +2,14 @@ import { PROVINCES } from './provinces.js'
 
 const SNOWY_CODES = new Set(['snow', 'sleet'])
 const NAME_BY_ID = new Map(PROVINCES.map((province) => [province.id, province.name]))
+const clockFormatter = new Intl.DateTimeFormat('fa-IR', {
+  timeZone: 'Asia/Tehran',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+
+export const formatClock = (ms) => clockFormatter.format(ms)
 
 export class AlertsReport {
   #payload
@@ -60,12 +68,15 @@ export class AlertsReport {
       code: entry.code,
       label: entry.label,
       precip: Number(entry.precip) || 0,
+      startT: Number.isFinite(entry.startT) ? entry.startT : null,
     }))
+    const starts = sources.map((source) => source.startT).filter((value) => value !== null)
     const snowVotes = sources.filter((source) => SNOWY_CODES.has(source.code)).length
     return {
       date,
       kind: snowVotes * 2 >= sources.length ? 'snow' : 'rain',
       maxPrecip: Math.max(...sources.map((source) => source.precip)),
+      startT: starts.length > 0 ? Math.min(...starts) : null,
       sources,
     }
   }

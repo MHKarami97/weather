@@ -4,16 +4,21 @@
  *
  * Shape:
  * { schema, generatedAt, sources: { <id>: <name> },
- *   provinces: { <provinceId>: { <YYYY-MM-DD>: [ { source, code, label, precip } ] } } }
+ *   provinces: { <provinceId>: { <YYYY-MM-DD>: [ { source, code, label, precip, startT? } ] } } }
+ *
+ * startT (optional, epoch ms): estimated start of the first wet period of that day for that source.
  */
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { TEHRAN_OFFSET_MS, localDayKey, stepHours } from '../src/lib/weather.js'
 
 const SCHEMA = 1
 const WINDY_ID = 'windy'
+const HOUR_MS = 3600000
 const PRECIP_THRESHOLD_MM = 0.2
-const MAX_SNAPSHOT_AGE_MS = 24 * 60 * 60 * 1000
+const WET_MM_PER_HOUR = 0.03
+const MAX_SNAPSHOT_AGE_MS = 24 * HOUR_MS
 const RAIN_SNOW_CODES = new Set(['storm', 'heavy-rain', 'rain', 'drizzle', 'snow', 'sleet'])
 const SOURCE_NAMES = {
   windy: 'Windy',
@@ -81,19 +86,44 @@ class AlertsBuilder {
     return typeof doc.fetchedAtMs !== 'number' || this.nowMs - doc.fetchedAtMs <= MAX_SNAPSHOT_AGE_MS
   }
 
+  /**
+   * Rows carry the precipitation of the period that ENDS at row.t, so the wet period starts
+   * one step earlier. The result is clamped to local midnight of the day the row belongs to.
+   */
+  #firstWetStarts(doc) {
+    const starts = new Map()
+    const rows = Array.isArray(doc.hourly) ? [...doc.hourly].sort((a, b) => a.t - b.t) : []
+    if (rows.length < 2) return starts
+
+    const stepH = stepHours(rows)
+    for (const row of rows) {
+      if ((row.precip ?? 0) / Math.max(stepH, 1) < WET_MM_PER_HOUR) continue
+      const key = localDayKey(row.t)
+      if (starts.has(key)) continue
+      const dayStart = Date.parse(`${key}T00:00:00Z`) - TEHRAN_OFFSET_MS
+      starts.set(key, Math.max(row.t - stepH * HOUR_MS, dayStart))
+    }
+    return starts
+  }
+
   #collect(provinces, sourceId, doc) {
+    const starts = this.#firstWetStarts(doc)
+
     for (const day of doc.daily) {
       const code = day.condition?.code ?? ''
       const precip = day.precip ?? 0
       if (!day.key || (!RAIN_SNOW_CODES.has(code) && precip < PRECIP_THRESHOLD_MM)) continue
 
-      const byDate = (provinces[doc.id] ??= {})
-      ;(byDate[day.key] ??= []).push({
+      const entry = {
         source: sourceId,
         code: code || 'rain',
         label: day.condition?.label || '',
         precip,
-      })
+      }
+      if (starts.has(day.key)) entry.startT = starts.get(day.key)
+
+      const byDate = (provinces[doc.id] ??= {})
+      ;(byDate[day.key] ??= []).push(entry)
     }
   }
 }

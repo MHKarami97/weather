@@ -12,7 +12,8 @@
     "test:logic": "node scripts/selftest.mjs",
     "fetch-sources": "node scripts/fetch-sources.mjs",
     "build-manifest": "node scripts/build-manifest.mjs",
-    "test:sources": "node scripts/selftest-sources.mjs"
+    "test:sources": "node scripts/selftest-sources.mjs",
+    "test:alerts": "node scripts/selftest-alerts.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

@@ -17,7 +17,14 @@ const earliestStart = computed(() => {
 const summary = computed(() => {
   if (earliestStart.value === null) return ''
   const clock = formatClock(earliestStart.value)
-  return earliestStart.value <= Date.now() ? `از ساعت ${clock} شروع شده` : `شروع بارش حدود ساعت ${clock}`
+  const diffHours = (Date.now() - earliestStart.value) / 3600000
+  if (earliestStart.value > Date.now()) {
+    return `شروع بارش از حدود ساعت ${clock}`
+  }
+  if (diffHours < 3) {
+    return `بارش از حوالی ساعت ${clock} شروع شده`
+  }
+  return `زمان تخمینی شروع: حدود ساعت ${clock}`
 })
 </script>
 

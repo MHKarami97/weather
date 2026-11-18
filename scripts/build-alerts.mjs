@@ -16,10 +16,17 @@ import { TEHRAN_OFFSET_MS, localDayKey, stepHours } from '../src/lib/weather.js'
 const SCHEMA = 1
 const WINDY_ID = 'windy'
 const HOUR_MS = 3600000
-const PRECIP_THRESHOLD_MM = 0.2
-const WET_MM_PER_HOUR = 0.03
+
+// حداقل بارش روزانه برای ثبت هشدار باران و ارسال نوتیفیکیشن (میلی‌متر)
+// مقادیر کمتر از ۱٫۵ میلی‌متر معمولاً در آب‌وهوای ایران به صورت قطره‌های ناچیز، ویرگا یا رطوبت سطحی ظاهر می‌شوند
+// و نباید به عنوان هشدار بارندگی به کاربر گزارش شوند.
+export const PRECIP_THRESHOLD_MM = 1.5
+export const SNOW_PRECIP_THRESHOLD_MM = 1.0
+export const SIGNIFICANT_PRECIP_MM = 2.5
+export const WET_MM_PER_HOUR = 0.2
+
 const MAX_SNAPSHOT_AGE_MS = 24 * HOUR_MS
-const RAIN_SNOW_CODES = new Set(['storm', 'heavy-rain', 'rain', 'drizzle', 'snow', 'sleet'])
+const RAIN_SNOW_CODES = new Set(['storm', 'heavy-rain', 'rain', 'snow', 'sleet'])
 const SOURCE_NAMES = {
   windy: 'Windy',
   'met-no': 'MET Norway',
@@ -46,7 +53,7 @@ const listDir = async (dir, options) => {
   }
 }
 
-class AlertsBuilder {
+export class AlertsBuilder {
   constructor(outDir, nowMs) {
     this.outDir = outDir
     this.nowMs = nowMs
@@ -56,13 +63,17 @@ class AlertsBuilder {
     const sources = {}
     const provinces = {}
 
-    for (const source of await this.#listSources()) {
+    const listed = await this.#listSources()
+    for (const source of listed) {
       const docs = await this.#readFreshProvinces(source.provincesDir)
       if (docs.length === 0) continue
 
       sources[source.id] = SOURCE_NAMES[source.id] ?? source.id
       for (const doc of docs) this.#collect(provinces, source.id, doc)
     }
+
+    const totalActiveSources = Object.keys(sources).length
+    this.#pruneUnreliableAlerts(provinces, totalActiveSources)
 
     return { schema: SCHEMA, generatedAt: new Date(this.nowMs).toISOString(), sources, provinces }
   }
@@ -110,20 +121,56 @@ class AlertsBuilder {
     const starts = this.#firstWetStarts(doc)
 
     for (const day of doc.daily) {
-      const code = day.condition?.code ?? ''
-      const precip = day.precip ?? 0
-      if (!day.key || (!RAIN_SNOW_CODES.has(code) && precip < PRECIP_THRESHOLD_MM)) continue
+      if (!day.key) continue
+      const rawCode = day.condition?.code ?? ''
+      const precip = Number(day.precip) || 0
+      const isSnow = rawCode === 'snow' || rawCode === 'sleet'
+      const minThreshold = isSnow ? SNOW_PRECIP_THRESHOLD_MM : PRECIP_THRESHOLD_MM
 
+      // اگر بارش روزانه کمتر از حداقل تعیین‌شده باشد، از هشدار صرف‌نظر می‌شود
+      if (precip < minThreshold) continue
+
+      const code = RAIN_SNOW_CODES.has(rawCode) ? rawCode : (isSnow ? 'snow' : 'rain')
       const entry = {
         source: sourceId,
-        code: code || 'rain',
-        label: day.condition?.label || '',
-        precip,
+        code,
+        label: day.condition?.label || (isSnow ? 'برف' : 'باران'),
+        precip: Number(precip.toFixed(1)),
       }
       if (starts.has(day.key)) entry.startT = starts.get(day.key)
 
       const byDate = (provinces[doc.id] ??= {})
       ;(byDate[day.key] ??= []).push(entry)
+    }
+  }
+
+  /**
+   * حذف روزهای نامطمئن:
+   * اگر چندین منبع فعال در سیستم باشند و تنها ۱ منبع با بارش اندک (زیر ۲٫۵ میلی‌متر) هشدار داده
+   * باشد در حالی که سایر مدل‌ها هوا را خشک پیش‌بینی کرده‌اند، نویز مدل محسوب شده و هشدار لغو می‌شود.
+   */
+  #pruneUnreliableAlerts(provinces, totalActiveSources) {
+    for (const [provinceId, byDate] of Object.entries(provinces)) {
+      for (const [dateKey, entries] of Object.entries(byDate)) {
+        if (!entries || entries.length === 0) {
+          delete byDate[dateKey]
+          continue
+        }
+
+        const maxPrecip = Math.max(...entries.map((e) => Number(e.precip) || 0))
+        const hasSnow = entries.some((e) => e.code === 'snow' || e.code === 'sleet')
+        const isSignificant = hasSnow ? maxPrecip >= 1.5 : maxPrecip >= SIGNIFICANT_PRECIP_MM
+        const hasConsensus = entries.length >= 2
+        const onlyFewSources = totalActiveSources <= 2
+
+        if (!hasConsensus && !isSignificant && !onlyFewSources) {
+          delete byDate[dateKey]
+        }
+      }
+
+      if (Object.keys(byDate).length === 0) {
+        delete provinces[provinceId]
+      }
     }
   }
 }

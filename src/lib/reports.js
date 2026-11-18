@@ -41,9 +41,9 @@ export function buildReports({ rows, daily, air, lat, lon }, now = Date.now()) {
   else cloth = 'لباس بسیار سبک و روشن، کلاه آفتابی و مصرف فراوان آب ضروری است.'
   add('info', '👕', 'پیشنهاد پوشش', `دمای محسوس اکنون ${fa(feels)}° است. ${cloth}`)
 
-  const wet = next24.filter((r) => (r.precip ?? 0) / stepH >= 0.1)
+  const wet = next24.filter((r) => (r.precip ?? 0) / stepH >= 0.15)
   const total24 = next24.reduce((a, r) => a + (r.precip ?? 0), 0)
-  if (wet.length) {
+  if (wet.length && total24 >= 1.2) {
     const heavy = total24 >= 20
     const snowy = wet.some((r) => (r.snow ?? 0) > 0.5 * (r.precip || 1) || r.temp <= 0.5)
     add(
